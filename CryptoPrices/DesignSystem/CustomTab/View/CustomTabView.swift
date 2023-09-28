@@ -6,31 +6,29 @@
 //
 
 import SwiftUI
-import Foundation
-
-struct TabItemModel: Codable {
-    var title: String
-    var image: String
-    var imagefill: String
-}
 
 struct CustomTabView: View {
     @Binding var tabSelection: Int
     @Namespace private var animationNamespace
 
-    let tabBarItems: [(title: String, image: String, imageSelect: String)] = [
-        ("Home", "house", "house.fill"),
-        ("Home", "house", "house.fill"),
-        ("Home", "house", "house.fill"),
-        ("Home", "house", "house.fill")
+    let tabItems: [TabItemModel] = [
+        TabItemModel(title: "Home", image: "house", imageFill: "house.fill"),
+        TabItemModel(title: "Market", image: "square.grid.2x2", imageFill: "square.grid.2x2.fill"),
+        TabItemModel(title: "News", image: "newspaper", imageFill: "newspaper.fill"),
+        TabItemModel(title: "Settings", image: "gearshape", imageFill: "gearshape.fill"),
     ]
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 10)
-                .frame(height: 80)
-                .foregroundColor(Color("backgroundColor"))
-                .shadow(radius: 8)
+            Rectangle()
+                .frame(height: 120)
+                .foregroundColor(Color("ui-background"))
+                .shadow(color: Color("ui-background").opacity(0.6), radius: 6, y: -2)
+
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(Color("ui-secondary"))
+                .offset(y: -60)
 
             HStack(alignment: .center) {
                 ForEach(0..<4) { index in
@@ -38,16 +36,15 @@ struct CustomTabView: View {
                         tabSelection = index
                     } label: {
                         VStack(spacing: 8) {
-                            Spacer()
 
-                            Image(systemName: index == tabSelection ? tabBarItems[index].imageSelect : tabBarItems[index].image)
-                                .frame(width: 30, height: 30)
-                                .background(index == tabSelection ? Color("accentColor") : Color("secondaryColor"))
-                                .foregroundStyle(index == tabSelection ? .white : Color("foregroundColor"))
+                            Image(systemName: index == tabSelection ? tabItems[index].imageFill : tabItems[index].image)
+                                .frame(width: index == tabSelection ? 34 : 30, height: index == tabSelection ? 34 : 30)
+                                .background(index == tabSelection ? Color("ui-accent") : Color("ui-secondary"))
+                                .foregroundStyle(index == tabSelection ? .white : Color("ui-foreground"))
                                 .clipShape(RoundedRectangle(cornerRadius: 6))
 
-                            Text(tabBarItems[index].title)
-                                .foregroundStyle(index == tabSelection ? .white : Color("foregroundColor"))
+                            Text(tabItems[index].title)
+                                .foregroundStyle(index == tabSelection ? .white : Color("ui-foreground"))
                                 .font(.system(size: 14))
                                 .fontWeight(.semibold)
 
@@ -59,7 +56,6 @@ struct CustomTabView: View {
             }
                 .frame(height: 80)
         }
-            .padding(.horizontal)
     }
 }
 

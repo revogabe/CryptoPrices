@@ -25,29 +25,27 @@ struct CoinsListView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                HStack {
-                    List {
-                        ForEach(filteredCoins) { coin in
-                            CoinItemView(coin: coin)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button {
-                                    print("Favorite: \(coin.id)")
-                                } label: {
-                                    Label("Favoritar", systemImage: "star.fill")
-                                        .tint(Color.orange)
-                                }
-                            }
-                                .onTapGesture {
-                                viewModel.coinID = coin.id
-                                isShowingSafariView = true
+                List {
+                    ForEach(filteredCoins) { coin in
+                        CoinItemView(coin: coin)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button {
+                                print("Favorite: \(coin.id)")
+                            } label: {
+                                Label("Favoritar", systemImage: "star.fill")
+                                    .tint(Color.orange)
                             }
                         }
-                            .listRowBackground(Color("ui-secondary"))
-
+                            .onTapGesture {
+                            viewModel.coinID = coin.id
+                            isShowingSafariView = true
+                        }
                     }
+                        .listRowBackground(Color("ui-secondary"))
+
                 }
             }
-                .navigationBarTitle("Market", displayMode: .inline)
+                .navigationBarTitle("Market", displayMode: .automatic)
                 .searchable(text: $searchText, placement: .toolbar, prompt: "Search for crypto")
                 .listRowSpacing(12)
                 .sheet(isPresented: $isShowingSafariView) {
