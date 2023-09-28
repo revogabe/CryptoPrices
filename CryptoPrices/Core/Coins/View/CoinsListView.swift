@@ -8,35 +8,62 @@
 import SwiftUI
 
 // Main View
-struct CoinsView: View {
+struct CoinsListView: View {
     @StateObject var viewModel = CoinsViewModel()
     @State private var isShowingSafariView = false
+    @State private var searchText = ""
+
+    var filteredCoins: [CoinModel] {
+        guard !searchText.isEmpty else { return viewModel.mockData }
+        return viewModel.coins.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+    }
+
+    init () {
+        UITableView.appearance().backgroundColor = .clear
+    }
 
     var body: some View {
-            NavigationStack {
-                List {
-                    ForEach(viewModel.coins) { coin in
-                        CoinItemView(coin: coin)
-                            .onTapGesture {
-                            viewModel.coinID = coin.id
-                            isShowingSafariView = true
+        NavigationStack {
+            VStack {
+                HStack {
+                    List {
+                        ForEach(filteredCoins) { coin in
+                            CoinItemView(coin: coin)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button {
+                                    print("Favorite: \(coin.id)")
+                                } label: {
+                                    Label("Favoritar", systemImage: "star.fill")
+                                        .tint(Color.orange)
+                                }
+                            }
+                                .onTapGesture {
+                                viewModel.coinID = coin.id
+                                isShowingSafariView = true
+                            }
                         }
+                            .listRowBackground(Color("ui-secondary"))
+
                     }
-                }
-                    .overlay {
-                    if let error = viewModel.errorMessage {
-                        Text(error)
-                    }
-                }
-                    .navigationTitle("🧐 Top 20 Cryptos")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .listRowSpacing(8)
-                    .sheet(isPresented: $isShowingSafariView) {
-                    SafariView(url: URL(string: "https://www.coingecko.com/en/coins/\(viewModel.coinID)")!)
                 }
             }
+                .navigationBarTitle("Market", displayMode: .inline)
+                .searchable(text: $searchText, placement: .toolbar, prompt: "Search for crypto")
+                .listRowSpacing(12)
+                .sheet(isPresented: $isShowingSafariView) {
+                SafariView(url: URL(string: "https://www.coingecko.com/en/coins/\(viewModel.coinID)")!)
+            }
+                .scrollContentBackground(.hidden)
+                .background {
+                Color("ui-background")
+                    .ignoresSafeArea(.all)
+            }
+
+        }
     }
 }
+
+
 
 // SubView
 struct CoinItemView: View {
@@ -117,7 +144,7 @@ struct CoinItemView: View {
 
     func percentChange(_ percent: Double) -> String {
         let numberFormatter = NumberFormatter()
-        numberFormatter.maximumFractionDigits = 3
+        numberFormatter.maximumFractionDigits = 2
 
         return numberFormatter.string(from: NSNumber(value: percent)) ?? ""
     }
@@ -139,5 +166,5 @@ struct CoinItemView: View {
 
 
 #Preview {
-    CoinsView()
+    CoinsListView()
 }
