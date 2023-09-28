@@ -12,6 +12,8 @@ struct CryptoPricesApp: App {
     var body: some Scene {
         WindowGroup {
             CoinsView()
+
         }
     }
 }
+

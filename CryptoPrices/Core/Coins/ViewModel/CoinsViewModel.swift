@@ -11,6 +11,11 @@ class CoinsViewModel: ObservableObject {
     // States
     @Published var coins = [CoinModel]()
     @Published var errorMessage: String?
+    @Published var coinID: String = ""
+
+
+    // Mock Data
+    let mockData = MockData.sampleCoins
 
     // Network Service
     private let service = CoinDataService()
@@ -37,7 +42,7 @@ class CoinsViewModel: ObservableObject {
         service.fetchCoins() { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let result): 
+                case .success(let result):
                     self?.coins = result
                 case .failure(let error):
                     self?.errorMessage = error.localizedDescription
